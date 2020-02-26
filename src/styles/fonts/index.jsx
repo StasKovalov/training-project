@@ -1,1 +1,0 @@
-import { fontFace } from '../../utils';
