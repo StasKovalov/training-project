@@ -1,28 +1,19 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Switch, Route } from 'react-router-dom';
+import Layout from './components/Layout/index';
+import Home from './pages/Home';
+import 'antd/dist/antd.css';
 
-const a = 5;
+import GlobalStyles from './styles/GlobalStyles';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
-
+const App = () => (
+  <>
+    <GlobalStyles />
+    <Layout>
+      <Switch>
+        <Route exact path='/' component={Home} />
+      </Switch>
+    </Layout>
+  </>
+);
 export default App;
