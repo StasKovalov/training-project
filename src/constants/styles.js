@@ -5,7 +5,6 @@ export const transiton = 'all 0.2s ease-out';
 export const zIndexPro = 99;
 
 // MEDIA QUERIES
-
 export const maxSizes = {
   small: 575,
   medium: 767,

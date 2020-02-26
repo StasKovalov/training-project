@@ -1,4 +1,4 @@
-import { useContext, createContext } from 'react';
+import React, { useContext, createContext } from 'react';
 import { initRootState, rootReducer } from './reducer';
 import contextProviderFactory from './contextProviderFactory';
 
