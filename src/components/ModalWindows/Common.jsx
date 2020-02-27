@@ -3,33 +3,33 @@ import moment from 'moment';
 import * as Yup from 'yup';
 import styled from 'styled-components';
 import { Formik, ErrorMessage } from 'formik';
-import { Modal } from 'antd';
+import { Modal, message, Button } from 'antd';
 import { Input } from 'formik-antd';
 
 import { ErrorMsg } from '../../common/Message';
 import { FULL_DATE_FORMAT } from '../../constants';
 import { getMinError, getRequiredError } from '../../constants/validationError';
 import { text } from '../../constants/styles';
+import { updateRecipe } from '../../context/actions';
+import { useRootContext } from '../../context';
+import { successMessage } from '../../constants/messages';
 
 const { TextArea } = Input;
 
-const updateRecepie = (
-  prevRecepieVersion,
+const createDispatchObject = (
+  prevRecipeVersion,
   editingHistory,
   { title, description },
-) => {
-  const updateRecepie = {
-    recepie: {
-      ...prevRecepieVersion,
-      title,
-      description,
-      creation_time: moment().format(FULL_DATE_FORMAT),
-    },
-    editing_history: [prevRecepieVersion, ...editingHistory],
-  };
-};
+) => ({
+  recipe: {
+    ...prevRecipeVersion,
+    title,
+    description,
+  },
+  editing_history: [prevRecipeVersion, ...editingHistory],
+});
 
-const reciepSchema = Yup.object().shape({
+const recipeSchema = Yup.object().shape({
   title: Yup.string()
     .required(getRequiredError('Title'))
     .min(3, getMinError('Title', 3)),
@@ -38,26 +38,59 @@ const reciepSchema = Yup.object().shape({
     .min(70, getMinError('Description', 70)),
 });
 
-const Editing = ({
-  recepie,
+const Common = ({
+  recipe,
   editing_history,
   initialValues,
   isVisible,
   hideModal,
-  onSaveChanges,
 }) => {
+  const { dispatch } = useRootContext();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onSubmit = async values => {
+    await setIsLoading(true);
+    const dispatchObject = createDispatchObject(
+      recipe,
+      editing_history,
+      values,
+    );
+
+    setTimeout(() => {
+      message.success(successMessage);
+    }, 800);
+
+    setTimeout(() => {
+      updateRecipe(dispatch, dispatchObject);
+      setIsLoading(false);
+      hideModal();
+    }, 1000);
+  };
+
   return (
     <Modal
-      title={<ModalTitle>RECIEP EDITING</ModalTitle>}
+      title={<ModalTitle>RECIPE EDITING</ModalTitle>}
       visible={isVisible}
-      onOk={onSaveChanges}
+      centered
+      okButtonProps={{
+        htmlType: 'submit',
+      }}
       onCancel={hideModal}
+      footer={null}
       destroyOnClose
     >
-      <Formik initialValues={initialValues} validationSchema={reciepSchema}>
-        {({ isSubmitting, handleChange }) => {
+      <Formik
+        initialValues={initialValues}
+        onSubmit={async (values, { setSubmitting }) => {
+          setSubmitting(true);
+          await onSubmit(values);
+          setSubmitting(false);
+        }}
+        validationSchema={recipeSchema}
+      >
+        {({ isSubmitting, handleSubmit, handleChange }) => {
           return (
-            <form onSubmit>
+            <form onSubmit={handleSubmit}>
               <MarginBottom>
                 <TextMarginBottom>Title:</TextMarginBottom>
                 <Input
@@ -87,6 +120,12 @@ const Editing = ({
                   render={msg => <ErrorMsg>{msg}</ErrorMsg>}
                 />
               </MarginBottom>
+              <FlexEnd>
+                <StyledButton>Cancel</StyledButton>
+                <StyledButton htmlType='submit' type='primary'>
+                  Update
+                </StyledButton>
+              </FlexEnd>
             </form>
           );
         }}
@@ -95,7 +134,7 @@ const Editing = ({
   );
 };
 
-export default Editing;
+export default Common;
 
 const AntdTextArea = styled(TextArea)`
   resize: none;
@@ -117,4 +156,16 @@ const ModalTitle = styled.h1`
   font-size: 25px;
   font-weight: 700;
   text-align: center;
+`;
+
+const FlexEnd = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const StyledButton = styled(Button)`
+  margin-right: 10px;
+  &:last-child {
+    margin-right: 0px;
+  }
 `;

@@ -41,6 +41,7 @@ module.exports = {
     'no-unused-vars': ['error', { varsIgnorePattern: '_' }],
     'no-underscore-dangle': 'off',
     'arrow-parens': 0,
+    'import/prefer-default-export': 0,
     'implicit-arrow-linebreak': 0,
     indent: ['off', 2, { SwitchCase: 1 }],
     'linebreak-style': ['off', 'unix'],

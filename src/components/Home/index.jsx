@@ -2,17 +2,17 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import { Card, Icon } from 'antd';
-import Editing from '../ModalWindows/Editing';
+import Editing from '../ModalWindows/Common';
 
 import { min, max } from '../../styles/MediaQueries';
 import { transiton } from '../../constants/styles';
 
 const { Meta } = Card;
 
-const RecepieCard = ({ recepie, editing_history }) => {
+const RecepieCard = ({ recipe, editing_history }) => {
   const initialValues = {
-    title: recepie.title,
-    description: recepie.description,
+    title: recipe.title,
+    description: recipe.description,
   };
   const [isVisible, setIsVisible] = useState(false);
 
@@ -29,21 +29,20 @@ const RecepieCard = ({ recepie, editing_history }) => {
       >
         <form style={{ flexGrow: 1 }}>
           <Meta
-            title={<Title>{recepie.title}</Title>}
-            description={<Description>{recepie.description}</Description>}
+            title={<Title>{recipe.title}</Title>}
+            description={<Description>{recipe.description}</Description>}
           />
         </form>
         <Flex>
-          CREATION TIME: <CreationTime>{recepie.creation_time}</CreationTime>
+          CREATION TIME: <CreationTime>{recipe.creation_time}</CreationTime>
         </Flex>
       </StyledCard>
       <Editing
         initialValues={initialValues}
-        recepie={recepie}
+        recipe={recipe}
         editing_history={editing_history}
         isVisible={isVisible}
         hideModal={() => setIsVisible(false)}
-        onSaveChanges={() => console.log('work')}
       />
     </>
   );

@@ -5,12 +5,16 @@ import { useRootContext } from '../context';
 
 const Home = () => {
   const {
-    state: { recepies },
+    state: { recipes },
   } = useRootContext();
   return (
     <Container>
-      {recepies.map(({ recepie, editing_history }) => (
-        <RecepieCard recepie={recepie} editing_history={editing_history} />
+      {recipes.map(({ recipe, editing_history }) => (
+        <RecepieCard
+          key={recipe.id}
+          recipe={recipe}
+          editing_history={editing_history}
+        />
       ))}
     </Container>
   );
