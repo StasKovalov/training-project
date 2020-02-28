@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import { Card, Icon } from 'antd';
-import Editing from '../ModalWindows/Common';
+import Common from '../ModalWindows/Common';
 
 import { min, max } from '../../styles/MediaQueries';
 import { transiton } from '../../constants/styles';
@@ -10,10 +10,6 @@ import { transiton } from '../../constants/styles';
 const { Meta } = Card;
 
 const RecepieCard = ({ recipe, editing_history }) => {
-  const initialValues = {
-    title: recipe.title,
-    description: recipe.description,
-  };
   const [isVisible, setIsVisible] = useState(false);
 
   return (
@@ -37,9 +33,9 @@ const RecepieCard = ({ recipe, editing_history }) => {
           CREATION TIME: <CreationTime>{recipe.creation_time}</CreationTime>
         </Flex>
       </StyledCard>
-      <Editing
-        initialValues={initialValues}
+      <Common
         recipe={recipe}
+        type='edit'
         editing_history={editing_history}
         isVisible={isVisible}
         hideModal={() => setIsVisible(false)}
@@ -54,6 +50,8 @@ const StyledCard = styled(Card)`
   transition: ${transiton};
   display: flex;
   flex-direction: column;
+  border-radius: 15px;
+  overflow: hidden;
   .ant-card-body {
     flex-grow: 1;
     display: flex;
@@ -80,8 +78,9 @@ const Title = styled.h4`
   text-overflow: ellipsis;
 `;
 
-const Description = styled.span`
+const Description = styled.div`
   font-size: 16px;
+  word-wrap: break-word;
 `;
 
 const Flex = styled.div`

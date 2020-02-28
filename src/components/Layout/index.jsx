@@ -16,7 +16,6 @@ const Layout = ({ children }) => (
 export default Layout;
 
 const Container = styled.section`
-  position: absolute;
   min-height: 100vh;
   padding: 20px;
 `;
@@ -31,4 +30,8 @@ const Sticky = styled.div`
   background: ${basic};
 `;
 
-const Content = styled.div``;
+const Content = styled.div`
+  max-width: 1300px;
+  margin: 0 auto;
+  padding-top: 110px;
+`;

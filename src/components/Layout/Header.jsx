@@ -1,18 +1,45 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
+import { Button } from 'antd';
 import { NavLink } from 'react-router-dom';
 import RecepieBookLogo from '../../assets/icons/logo.svg';
-import { text, hover, transiton } from '../../constants/styles';
+import { text, hover, transiton, logoText } from '../../constants/styles';
+import Common from '../ModalWindows/Common';
+import { max } from '../../styles/MediaQueries';
 
-const Header = () => (
-  <Wrapper>
-    <Logo src={RecepieBookLogo} alt='logo img' />
-    <Container>
-      <StyledNavLink to='/'>Recepies</StyledNavLink>
-      <StyledNavLink to='/add-recepies'>Add Recepie</StyledNavLink>
-    </Container>
-  </Wrapper>
-);
+const Header = () => {
+  const [isVisible, setIsVisible] = useState(false);
+  return (
+    <>
+      <Wrapper>
+        <Flex>
+          <HideWrapper>
+            <Logo src={RecepieBookLogo} alt='logo img' />
+            <LogoText>Coock Book</LogoText>
+          </HideWrapper>
+
+          <Container>
+            <StyledNavLink
+              activeStyle={{
+                color: hover,
+              }}
+              to='/'
+              exact
+            >
+              Recipes
+            </StyledNavLink>
+          </Container>
+        </Flex>
+        <ButtonWrapper>
+          <StyledButton onClick={() => setIsVisible(true)} size='large' type='primary'>
+            ADD RECIPE
+          </StyledButton>
+        </ButtonWrapper>
+      </Wrapper>
+      <Common isVisible={isVisible} type='add' hideModal={() => setIsVisible(false)} />
+    </>
+  );
+};
 
 export default Header;
 
@@ -20,8 +47,13 @@ const Wrapper = styled.div`
   max-width: 1300px;
   flex-basis: 100%;
   margin: 0 auto;
+  padding: 0px 20px;
+`;
+
+const Flex = styled.div`
   display: flex;
   align-items: center;
+  padding-bottom: 20px;
 `;
 
 const Container = styled.div`
@@ -31,6 +63,9 @@ const Container = styled.div`
   align-items: center;
   font-size: 20px;
   font-weight: 600;
+  ${max.exSmall`
+    height: 50px;
+  `}
 `;
 
 const StyledNavLink = styled(NavLink)`
@@ -38,12 +73,17 @@ const StyledNavLink = styled(NavLink)`
   text-transform: uppercase;
   transition: ${transiton};
   margin-right: 15px;
+  font-size: 25px;
   &:hover {
     color: ${hover};
   }
   &:last-child {
     margin-right: 0;
   }
+
+  ${max.exSmall`
+    font-size:30px;
+  `}
 `;
 
 const Logo = styled.img`
@@ -51,4 +91,30 @@ const Logo = styled.img`
   width: 50px;
   height: 50px;
   margin: 0px 15px;
+`;
+
+const LogoText = styled.div`
+  font-size: 30px;
+  color: ${logoText};
+  font-weight: 600;
+`;
+
+const HideWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  ${max.exSmall`
+    display: none;
+  `}
+`;
+
+const StyledButton = styled(Button)`
+  font-size: 20px;
+  font-weight: 500;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  ${max.exSmall`
+    justify-content: center;
+  `}
 `;

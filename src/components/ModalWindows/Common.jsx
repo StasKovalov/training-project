@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import moment from 'moment';
+import uid from 'uid';
 import * as Yup from 'yup';
 import styled from 'styled-components';
 import { Formik, ErrorMessage } from 'formik';
@@ -8,9 +9,9 @@ import { Input } from 'formik-antd';
 
 import { ErrorMsg } from '../../common/Message';
 import { FULL_DATE_FORMAT } from '../../constants';
-import { getMinError, getRequiredError } from '../../constants/validationError';
+import { getMinError, getRequiredError, getMaxError } from '../../constants/validationError';
 import { text } from '../../constants/styles';
-import { updateRecipe } from '../../context/actions';
+import { updateRecipe, addRecipe } from '../../context/actions';
 import { useRootContext } from '../../context';
 import { successMessage } from '../../constants/messages';
 
@@ -20,48 +21,59 @@ const createDispatchObject = (
   prevRecipeVersion,
   editingHistory,
   { title, description },
-) => ({
-  recipe: {
-    ...prevRecipeVersion,
-    title,
-    description,
-  },
-  editing_history: [prevRecipeVersion, ...editingHistory],
-});
+  modalType,
+) => {
+  if (modalType === 'edit') {
+    return {
+      recipe: {
+        ...prevRecipeVersion,
+        title,
+        description,
+      },
+      editing_history: [prevRecipeVersion, ...editingHistory],
+    };
+  }
+  return {
+    recipe: {
+      id: uid(),
+      title,
+      description,
+      creation_time: moment().format(FULL_DATE_FORMAT),
+    },
+    editing_history: [],
+  };
+};
 
 const recipeSchema = Yup.object().shape({
   title: Yup.string()
     .required(getRequiredError('Title'))
-    .min(3, getMinError('Title', 3)),
+    .min(3, getMinError('Title', 3))
+    .max(50, getMaxError('Title', 50)),
   description: Yup.string()
     .required(getRequiredError('Description'))
-    .min(70, getMinError('Description', 70)),
+    .min(70, getMinError('Description', 70))
+    .max(300, getMaxError('Description', 700)),
 });
 
-const Common = ({
-  recipe,
-  editing_history,
-  initialValues,
-  isVisible,
-  hideModal,
-}) => {
+const Common = ({ recipe = {}, editing_history, type, isVisible, hideModal }) => {
   const { dispatch } = useRootContext();
   const [isLoading, setIsLoading] = useState(false);
 
+  const initialValues = {
+    title: recipe.title || '',
+    description: recipe.description || '',
+  };
+
   const onSubmit = async values => {
     await setIsLoading(true);
-    const dispatchObject = createDispatchObject(
-      recipe,
-      editing_history,
-      values,
-    );
-
+    const dispatchObject = createDispatchObject(recipe, editing_history, values, type);
     setTimeout(() => {
       message.success(successMessage);
     }, 800);
 
     setTimeout(() => {
-      updateRecipe(dispatch, dispatchObject);
+      if (type === 'add') addRecipe(dispatch, dispatchObject);
+      else updateRecipe(dispatch, dispatchObject);
       setIsLoading(false);
       hideModal();
     }, 1000);
@@ -69,13 +81,10 @@ const Common = ({
 
   return (
     <Modal
-      title={<ModalTitle>RECIPE EDITING</ModalTitle>}
+      title={<ModalTitle>{`${type} recipe`}</ModalTitle>}
       visible={isVisible}
-      centered
-      okButtonProps={{
-        htmlType: 'submit',
-      }}
       onCancel={hideModal}
+      centered
       footer={null}
       destroyOnClose
     >
@@ -88,47 +97,44 @@ const Common = ({
         }}
         validationSchema={recipeSchema}
       >
-        {({ isSubmitting, handleSubmit, handleChange }) => {
-          return (
-            <form onSubmit={handleSubmit}>
-              <MarginBottom>
-                <TextMarginBottom>Title:</TextMarginBottom>
-                <Input
-                  onChange={handleChange}
-                  size='large'
-                  placeholder='Title'
-                  name='title'
-                  disabled={isSubmitting}
-                />
-                <ErrorMessage
-                  name='title'
-                  render={msg => <ErrorMsg>{msg}</ErrorMsg>}
-                />
-              </MarginBottom>
+        {({ isSubmitting, errors, handleSubmit, handleChange }) => (
+          <form onSubmit={handleSubmit}>
+            <MarginBottom>
+              <TextMarginBottom>Title:</TextMarginBottom>
+              <Input
+                onChange={handleChange}
+                size='large'
+                placeholder='Title'
+                name='title'
+                disabled={isSubmitting}
+              />
+              <ErrorMessage name='title' render={msg => <ErrorMsg>{msg}</ErrorMsg>} />
+            </MarginBottom>
 
-              <MarginBottom>
-                <TextMarginBottom>Description:</TextMarginBottom>
-                <AntdTextArea
-                  onChange={handleChange}
-                  autoSize={{ maxRows: 7 }}
-                  placeholder='Description'
-                  name='description'
-                  disabled={isSubmitting}
-                />
-                <ErrorMessage
-                  name='description'
-                  render={msg => <ErrorMsg>{msg}</ErrorMsg>}
-                />
-              </MarginBottom>
-              <FlexEnd>
-                <StyledButton>Cancel</StyledButton>
-                <StyledButton htmlType='submit' type='primary'>
-                  Update
-                </StyledButton>
-              </FlexEnd>
-            </form>
-          );
-        }}
+            <MarginBottom>
+              <TextMarginBottom>Description:</TextMarginBottom>
+              <AntdTextArea
+                onChange={handleChange}
+                autoSize={{ minRows: 3, maxRows: 7 }}
+                placeholder='Description'
+                name='description'
+                disabled={isSubmitting}
+              />
+              <ErrorMessage name='description' render={msg => <ErrorMsg>{msg}</ErrorMsg>} />
+            </MarginBottom>
+            <FlexEnd>
+              <StyledButton onClick={hideModal}>Cancel</StyledButton>
+              <StyledButton
+                disabled={Object.keys(errors).length}
+                loading={isLoading}
+                htmlType='submit'
+                type='primary'
+              >
+                {type}
+              </StyledButton>
+            </FlexEnd>
+          </form>
+        )}
       </Formik>
     </Modal>
   );
@@ -156,6 +162,7 @@ const ModalTitle = styled.h1`
   font-size: 25px;
   font-weight: 700;
   text-align: center;
+  text-transform: uppercase;
 `;
 
 const FlexEnd = styled.div`
@@ -165,6 +172,9 @@ const FlexEnd = styled.div`
 
 const StyledButton = styled(Button)`
   margin-right: 10px;
+  & > span::first-letter {
+    text-transform: uppercase;
+  }
   &:last-child {
     margin-right: 0px;
   }

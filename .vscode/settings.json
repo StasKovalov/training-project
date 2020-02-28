@@ -1,6 +1,10 @@
 {
-    "typescript.preferences.quoteStyle": "single",
-    "javascript.preferences.quoteStyle": "single",
-    "prettier.jsxSingleQuote": true,
-    "prettier.singleQuote": true
+  "typescript.preferences.quoteStyle": "single",
+  "javascript.preferences.quoteStyle": "single",
+  "prettier.jsxSingleQuote": true,
+  "eslint.enable": true,
+  "eslint.alwaysShowStatus": true,
+  "eslint.validate": ["javascript", "javascriptreact"],
+  "prettier.singleQuote": true,
+  "editor.formatOnSave": true
 }
