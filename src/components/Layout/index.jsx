@@ -33,5 +33,5 @@ const Sticky = styled.div`
 const Content = styled.div`
   max-width: 1300px;
   margin: 0 auto;
-  padding-top: 110px;
+  padding-top: 70px;
 `;

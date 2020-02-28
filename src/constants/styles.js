@@ -4,7 +4,7 @@ export const hover = '#00b9ff';
 export const logoText = '#1890ff';
 export const transiton = 'all 0.2s ease-out';
 export const zIndexPro = 99;
-export const bannerBackground = '#00b9ff';
+export const bannerBackground = '#1890ff;';
 
 // MEDIA QUERIES
 export const maxSizes = {

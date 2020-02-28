@@ -1,45 +1,34 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { Button } from 'antd';
 import { NavLink } from 'react-router-dom';
 import RecepieBookLogo from '../../assets/icons/logo.svg';
 import { text, hover, transiton, logoText } from '../../constants/styles';
-import Common from '../ModalWindows/Common';
 import { max } from '../../styles/MediaQueries';
 
-const Header = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  return (
-    <>
-      <Wrapper>
-        <Flex>
-          <HideWrapper>
-            <Logo src={RecepieBookLogo} alt='logo img' />
-            <LogoText>Coock Book</LogoText>
-          </HideWrapper>
+const Header = () => (
+  <>
+    <Wrapper>
+      <Flex>
+        <HideWrapper>
+          <Logo src={RecepieBookLogo} alt='logo img' />
+          <LogoText>Coock Book</LogoText>
+        </HideWrapper>
 
-          <Container>
-            <StyledNavLink
-              activeStyle={{
-                color: hover,
-              }}
-              to='/'
-              exact
-            >
-              Recipes
-            </StyledNavLink>
-          </Container>
-        </Flex>
-        <ButtonWrapper>
-          <StyledButton onClick={() => setIsVisible(true)} size='large' type='primary'>
-            ADD RECIPE
-          </StyledButton>
-        </ButtonWrapper>
-      </Wrapper>
-      <Common isVisible={isVisible} type='add' hideModal={() => setIsVisible(false)} />
-    </>
-  );
-};
+        <Container>
+          <StyledNavLink
+            activeStyle={{
+              color: hover,
+            }}
+            to='/'
+            exact
+          >
+            Recipes
+          </StyledNavLink>
+        </Container>
+      </Flex>
+    </Wrapper>
+  </>
+);
 
 export default Header;
 
@@ -53,7 +42,6 @@ const Wrapper = styled.div`
 const Flex = styled.div`
   display: flex;
   align-items: center;
-  padding-bottom: 20px;
 `;
 
 const Container = styled.div`
@@ -104,17 +92,5 @@ const HideWrapper = styled.div`
   align-items: center;
   ${max.exSmall`
     display: none;
-  `}
-`;
-
-const StyledButton = styled(Button)`
-  font-size: 20px;
-  font-weight: 500;
-`;
-
-const ButtonWrapper = styled.div`
-  display: flex;
-  ${max.exSmall`
-    justify-content: center;
   `}
 `;

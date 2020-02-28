@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-import { Card, Icon } from 'antd';
+import { Card, Icon, Popconfirm } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import Common from '../ModalWindows/Common';
 
 import { min, max } from '../../styles/MediaQueries';
 import { transiton } from '../../constants/styles';
+import { deleteRecipe } from '../../context/actions';
+import { useRootContext } from '../../context';
 
 const { Meta } = Card;
 
 const RecepieCard = ({ recipe, editing_history }) => {
+  const { dispatch } = useRootContext();
   const [isVisible, setIsVisible] = useState(false);
 
   return (
@@ -20,7 +24,15 @@ const RecepieCard = ({ recipe, editing_history }) => {
         actions={[
           <Icon type='login' key='login' />,
           <Icon onClick={() => setIsVisible(true)} type='edit' key='edit' />,
-          <Icon type='delete' key='delete' />,
+          <Popconfirm
+            title='Are you sure delete this recipe?'
+            icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+            okText='Yes'
+            onConfirm={() => deleteRecipe(dispatch, recipe.id)}
+            cancelText='No'
+          >
+            <Icon type='delete' key='delete' />
+          </Popconfirm>,
         ]}
       >
         <form style={{ flexGrow: 1 }}>
@@ -57,7 +69,7 @@ const StyledCard = styled(Card)`
     display: flex;
     flex-direction: column;
   }
-
+  margin: 4px;
   ${min.exLarge`
         width: 32%;
     `};

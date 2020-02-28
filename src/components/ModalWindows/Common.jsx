@@ -9,7 +9,11 @@ import { Input } from 'formik-antd';
 
 import { ErrorMsg } from '../../common/Message';
 import { FULL_DATE_FORMAT } from '../../constants';
-import { getMinError, getRequiredError, getMaxError } from '../../constants/validationError';
+import {
+  getMinError,
+  getRequiredError,
+  getMaxError,
+} from '../../constants/validationError';
 import { text } from '../../constants/styles';
 import { updateRecipe, addRecipe } from '../../context/actions';
 import { useRootContext } from '../../context';
@@ -48,14 +52,20 @@ const recipeSchema = Yup.object().shape({
   title: Yup.string()
     .required(getRequiredError('Title'))
     .min(3, getMinError('Title', 3))
-    .max(50, getMaxError('Title', 50)),
+    .max(150, getMaxError('Title', 150)),
   description: Yup.string()
     .required(getRequiredError('Description'))
     .min(70, getMinError('Description', 70))
-    .max(300, getMaxError('Description', 700)),
+    .max(700, getMaxError('Description', 700)),
 });
 
-const Common = ({ recipe = {}, editing_history, type, isVisible, hideModal }) => {
+const Common = ({
+  recipe = {},
+  editing_history,
+  type,
+  isVisible,
+  hideModal,
+}) => {
   const { dispatch } = useRootContext();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -66,7 +76,12 @@ const Common = ({ recipe = {}, editing_history, type, isVisible, hideModal }) =>
 
   const onSubmit = async values => {
     await setIsLoading(true);
-    const dispatchObject = createDispatchObject(recipe, editing_history, values, type);
+    const dispatchObject = createDispatchObject(
+      recipe,
+      editing_history,
+      values,
+      type,
+    );
     setTimeout(() => {
       message.success(successMessage);
     }, 800);
@@ -108,7 +123,10 @@ const Common = ({ recipe = {}, editing_history, type, isVisible, hideModal }) =>
                 name='title'
                 disabled={isSubmitting}
               />
-              <ErrorMessage name='title' render={msg => <ErrorMsg>{msg}</ErrorMsg>} />
+              <ErrorMessage
+                name='title'
+                render={msg => <ErrorMsg>{msg}</ErrorMsg>}
+              />
             </MarginBottom>
 
             <MarginBottom>
@@ -120,7 +138,10 @@ const Common = ({ recipe = {}, editing_history, type, isVisible, hideModal }) =>
                 name='description'
                 disabled={isSubmitting}
               />
-              <ErrorMessage name='description' render={msg => <ErrorMsg>{msg}</ErrorMsg>} />
+              <ErrorMessage
+                name='description'
+                render={msg => <ErrorMsg>{msg}</ErrorMsg>}
+              />
             </MarginBottom>
             <FlexEnd>
               <StyledButton onClick={hideModal}>Cancel</StyledButton>

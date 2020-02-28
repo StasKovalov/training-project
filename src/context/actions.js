@@ -11,7 +11,3 @@ export const updateRecipe = (dispatch, payload) => {
 export const deleteRecipe = (dispatch, payload) => {
   dispatch({ type: t.DELETE_RECIPE, payload });
 };
-
-export const searchRecipe = (dispatch, payload) => {
-  dispatch({ type: t.SEARCH_RECIPE, payload });
-};
