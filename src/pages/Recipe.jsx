@@ -1,46 +1,81 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { Spin, Empty } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 
 import { bannerBackground, basic, text } from '../constants/styles';
+import { useRootContext } from '../context';
+import RecepieCard from '../components/Home';
 
 const Recipe = ({ match }) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    state: { recipes },
+  } = useRootContext();
+  const [isLoading, setIsLoading] = useState(true);
+  const [recipeData, setRecipeData] = useState(null);
 
- useEffect(() => {
+  useEffect(() => {
+    const recipeId = Number(match.params.id);
+    const recipeObj = recipes.find(({ recipe }) => recipe.id === recipeId);
 
- }, []);
-return <Container>
-<BannerInfo>
-  <CenterBlock>
-    <Title>Title</Title>
-    <Flex>
-      CREATION TIME: <CreationTime>asdasdsads</CreationTime>
-    </Flex>
-  </CenterBlock>
-</BannerInfo>
+    setTimeout(() => {
+      setRecipeData(recipeObj);
+      setIsLoading(false);
+    }, 1000);
+  }, []);
 
-<Description>
-<Subtitle>Recipe</Subtitle>
-  asdasdsadsasdasdsadsasdasdsadsasdasdsadsasdasdsadsasdasdsadsasdasdsadsasdasdsadsasdas
-  dsadsasdasdsadsasdasdsadsasdasdsadsasdasdsadsasdasdsadsasdasdsadsa
-  sdasdsadsasdasdsadsasdasdsadsasdasdsadsasdasdsads
-</Description>
-<ChangeHistory>
-<Subtitle>Change history:</Subtitle>
-</ChangeHistory>
+  return isLoading ? (
+    <Loader>
+      <Spin indicator={<LoadingOutlined style={{ fontSize: 80 }} spin />} />
+    </Loader>
+  ) : (
+    <Container>
+      <BannerInfo>
+        <CenterBlock>
+          <Title>{recipeData.recipe.title}</Title>
+          <Flex>
+            CREATION TIME:{' '}
+            <CreationTime>{recipeData.recipe.creation_time}</CreationTime>
+          </Flex>
+        </CenterBlock>
+      </BannerInfo>
 
-       </Container>;
+      <Description>
+        <Subtitle>Recipe</Subtitle>
+        {recipeData.recipe.description}
+        <ChangeHistory>
+          <Subtitle>Change history:</Subtitle>
+          {recipeData.editing_history.length ? (
+            <CardsWrapper>
+              {recipeData.editing_history.map(recipe => (
+                <RecepieCard key={recipe.id} recipe={recipe} />
+              ))}
+            </CardsWrapper>
+          ) : (
+            <Empty
+              description={
+                <span style={{ fontSize: '20px' }}>
+                  Сhange history not found
+                </span>
+              }
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+            />
+          )}
+        </ChangeHistory>
+      </Description>
+    </Container>
+  );
 };
-
 
 export default Recipe;
 
 const Container = styled.div`
   color: ${basic};
-  `;
+`;
 
 const BannerInfo = styled.div`
   background: ${bannerBackground};
+  border-radius: 20px;
 `;
 
 const CenterBlock = styled.div`
@@ -64,7 +99,7 @@ const Title = styled.div`
 
 const CreationTime = styled.span`
   font-size: 17px;
-  color:#cecece;
+  color: #cecece;
   margin-left: 5px;
 `;
 
@@ -85,6 +120,17 @@ const Subtitle = styled.div`
 `;
 
 const ChangeHistory = styled.div`
-  margin-top: 20px;
-  border: 1px solid red;
+  margin-top: 40px;
+`;
+
+const Loader = styled.div`
+  height: calc(100vh - 125px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const CardsWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
 `;

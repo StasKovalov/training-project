@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { Card, Icon, Popconfirm } from 'antd';
@@ -13,6 +14,7 @@ import { useRootContext } from '../../context';
 const { Meta } = Card;
 
 const RecepieCard = ({ recipe, editing_history }) => {
+  const history = useHistory();
   const { dispatch } = useRootContext();
   const [isVisible, setIsVisible] = useState(false);
 
@@ -21,19 +23,25 @@ const RecepieCard = ({ recipe, editing_history }) => {
       <StyledCard
         style={{ marginTop: 16 }}
         hoverable
-        actions={[
-          <Icon type='login' key='login' />,
-          <Icon onClick={() => setIsVisible(true)} type='edit' key='edit' />,
-          <Popconfirm
-            title='Are you sure delete this recipe?'
-            icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-            okText='Yes'
-            onConfirm={() => deleteRecipe(dispatch, recipe.id)}
-            cancelText='No'
-          >
-            <Icon type='delete' key='delete' />
-          </Popconfirm>,
-        ]}
+        actions={
+          editing_history && [
+            <Icon
+              onClick={() => history.push(`/recipe/${recipe.id}`)}
+              type='login'
+              key='login'
+            />,
+            <Icon onClick={() => setIsVisible(true)} type='edit' key='edit' />,
+            <Popconfirm
+              title='Are you sure delete this recipe?'
+              icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+              okText='Yes'
+              onConfirm={() => deleteRecipe(dispatch, recipe.id)}
+              cancelText='No'
+            >
+              <Icon type='delete' key='delete' />
+            </Popconfirm>,
+          ]
+        }
       >
         <form style={{ flexGrow: 1 }}>
           <Meta
@@ -42,7 +50,11 @@ const RecepieCard = ({ recipe, editing_history }) => {
           />
         </form>
         <Flex>
-          CREATION TIME: <CreationTime>{recipe.creation_time}</CreationTime>
+          {editing_history && (
+            <>
+              CREATION TIME: <CreationTime>{recipe.creation_time}</CreationTime>
+            </>
+          )}
         </Flex>
       </StyledCard>
       <Common
@@ -70,6 +82,7 @@ const StyledCard = styled(Card)`
     flex-direction: column;
   }
   margin: 4px;
+
   ${min.exLarge`
         width: 32%;
     `};
