@@ -1,1 +1,1 @@
-export const successMessage = 'Recipe successfully added!';
+export const successMessage = (action) => `Recipe successfully ${action}ed!`;

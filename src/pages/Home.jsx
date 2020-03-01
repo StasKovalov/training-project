@@ -28,8 +28,8 @@ const Home = () => {
         <ButtonWrapper>
           <StyledButton
             onClick={() => setIsVisible(true)}
-            size='large'
-            type='primary'
+            size="large"
+            type="primary"
           >
             ADD RECIPE
           </StyledButton>
@@ -37,7 +37,7 @@ const Home = () => {
       </Parent>
       <Common
         isVisible={isVisible}
-        type='add'
+        type="add"
         hideModal={() => setIsVisible(false)}
       />
     </>
@@ -67,7 +67,7 @@ const StyledButton = styled(Button)`
 const ButtonWrapper = styled.div`
   position: sticky;
   padding-top: 40px;
-  bottom: 0;
+  bottom: 15px;
   display: flex;
   justify-content: center;
 `;

@@ -11,20 +11,18 @@ const Recipe = ({ match }) => {
   const {
     state: { recipes },
   } = useRootContext();
-  const [isLoading, setIsLoading] = useState(true);
   const [recipeData, setRecipeData] = useState(null);
 
   useEffect(() => {
-    const recipeId = Number(match.params.id);
-    const recipeObj = recipes.find(({ recipe }) => recipe.id === recipeId);
+    const recipeId = match.params.id;
+    const recipeObj = recipes.find(({ recipe }) => recipe.id == recipeId);
 
     setTimeout(() => {
       setRecipeData(recipeObj);
-      setIsLoading(false);
-    }, 1000);
-  }, []);
+    }, 500);
+  }, [match.params.id]);
 
-  return isLoading ? (
+  return !recipeData ? (
     <Loader>
       <Spin indicator={<LoadingOutlined style={{ fontSize: 80 }} spin />} />
     </Loader>
@@ -34,7 +32,7 @@ const Recipe = ({ match }) => {
         <CenterBlock>
           <Title>{recipeData.recipe.title}</Title>
           <Flex>
-            CREATION TIME:{' '}
+            CREATION TIME:
             <CreationTime>{recipeData.recipe.creation_time}</CreationTime>
           </Flex>
         </CenterBlock>
@@ -47,7 +45,7 @@ const Recipe = ({ match }) => {
           <Subtitle>Change history:</Subtitle>
           {recipeData.editing_history.length ? (
             <CardsWrapper>
-              {recipeData.editing_history.map(recipe => (
+              {recipeData.editing_history.map((recipe) => (
                 <RecepieCard key={recipe.id} recipe={recipe} />
               ))}
             </CardsWrapper>
@@ -95,6 +93,7 @@ const Title = styled.div`
   padding: 40px 0px;
   font-size: 45px;
   font-weight: 600;
+  word-wrap: break-word;
 `;
 
 const CreationTime = styled.span`

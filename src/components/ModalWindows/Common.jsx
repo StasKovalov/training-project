@@ -34,7 +34,11 @@ const createDispatchObject = (
         title,
         description,
       },
-      editing_history: [prevRecipeVersion, ...editingHistory],
+      editing_history: [{
+        ...prevRecipeVersion,
+        id: uid(),
+        editing_time: moment().format(FULL_DATE_FORMAT),
+      }, ...editingHistory],
     };
   }
   return {
@@ -74,7 +78,7 @@ const Common = ({
     description: recipe.description || '',
   };
 
-  const onSubmit = async values => {
+  const onSubmit = async (values) => {
     await setIsLoading(true);
     const dispatchObject = createDispatchObject(
       recipe,
@@ -83,7 +87,7 @@ const Common = ({
       type,
     );
     setTimeout(() => {
-      message.success(successMessage);
+      message.success(successMessage(type));
     }, 800);
 
     setTimeout(() => {
@@ -112,20 +116,22 @@ const Common = ({
         }}
         validationSchema={recipeSchema}
       >
-        {({ isSubmitting, errors, handleSubmit, handleChange }) => (
+        {({
+          isSubmitting, errors, handleSubmit, handleChange,
+        }) => (
           <form onSubmit={handleSubmit}>
             <MarginBottom>
               <TextMarginBottom>Title:</TextMarginBottom>
               <Input
                 onChange={handleChange}
-                size='large'
-                placeholder='Title'
-                name='title'
+                size="large"
+                placeholder="Title"
+                name="title"
                 disabled={isSubmitting}
               />
               <ErrorMessage
-                name='title'
-                render={msg => <ErrorMsg>{msg}</ErrorMsg>}
+                name="title"
+                render={(msg) => <ErrorMsg>{msg}</ErrorMsg>}
               />
             </MarginBottom>
 
@@ -134,13 +140,13 @@ const Common = ({
               <AntdTextArea
                 onChange={handleChange}
                 autoSize={{ minRows: 3, maxRows: 7 }}
-                placeholder='Description'
-                name='description'
+                placeholder="Description"
+                name="description"
                 disabled={isSubmitting}
               />
               <ErrorMessage
-                name='description'
-                render={msg => <ErrorMsg>{msg}</ErrorMsg>}
+                name="description"
+                render={(msg) => <ErrorMsg>{msg}</ErrorMsg>}
               />
             </MarginBottom>
             <FlexEnd>
@@ -148,8 +154,8 @@ const Common = ({
               <StyledButton
                 disabled={Object.keys(errors).length}
                 loading={isLoading}
-                htmlType='submit'
-                type='primary'
+                htmlType="submit"
+                type="primary"
               >
                 {type}
               </StyledButton>

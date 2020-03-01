@@ -11,8 +11,8 @@ const App = () => (
     <GlobalStyles />
     <Layout>
       <Switch>
-        {ROUTES.map(({ path, component, exact }) => (
-          <Route key={path} path={path} exact={exact} component={component} />
+        {ROUTES.map(({ path, component, exact }, i) => (
+          <Route key={i} path={path} exact={exact} component={component} />
         ))}
       </Switch>
     </Layout>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { Card, Icon, Popconfirm } from 'antd';
+import { Card, Icon, Popconfirm, message } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import Common from '../ModalWindows/Common';
 
@@ -10,6 +10,7 @@ import { min, max } from '../../styles/MediaQueries';
 import { transiton } from '../../constants/styles';
 import { deleteRecipe } from '../../context/actions';
 import { useRootContext } from '../../context';
+import { successMessage } from '../../constants/messages';
 
 const { Meta } = Card;
 
@@ -23,22 +24,43 @@ const RecepieCard = ({ recipe, editing_history }) => {
       <StyledCard
         style={{ marginTop: 16 }}
         hoverable
+        onClick={() => editing_history && history.push(`/recipe/${recipe.id}`)}
         actions={
           editing_history && [
             <Icon
-              onClick={() => history.push(`/recipe/${recipe.id}`)}
-              type='login'
-              key='login'
+              onClick={e => {
+                e.stopPropagation();
+                history.push(`/recipe/${recipe.id}`);
+              }}
+              type="login"
+              key="login"
             />,
-            <Icon onClick={() => setIsVisible(true)} type='edit' key='edit' />,
+            <Icon
+              onClick={e => {
+                e.stopPropagation();
+                setIsVisible(true);
+              }}
+              type="edit"
+              key="edit"
+            />,
             <Popconfirm
-              title='Are you sure delete this recipe?'
+              title="Are you sure delete this recipe?"
               icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-              okText='Yes'
-              onConfirm={() => deleteRecipe(dispatch, recipe.id)}
-              cancelText='No'
+              okText="Yes"
+              onConfirm={e => {
+                e.stopPropagation();
+                setTimeout(() => {
+                  deleteRecipe(dispatch, recipe.id);
+                  message.success(successMessage('delet'));
+                }, 500);
+              }}
+              cancelText="No"
             >
-              <Icon type='delete' key='delete' />
+              <Icon
+                onClick={e => e.stopPropagation()}
+                type="delete"
+                key="delete"
+              />
             </Popconfirm>,
           ]
         }
@@ -50,16 +72,15 @@ const RecepieCard = ({ recipe, editing_history }) => {
           />
         </form>
         <Flex>
-          {editing_history && (
-            <>
-              CREATION TIME: <CreationTime>{recipe.creation_time}</CreationTime>
-            </>
-          )}
+          {editing_history ? 'CREATION TIME:' : 'EDITING TIME:'}{' '}
+          <Time>
+            {editing_history ? recipe.creation_time : recipe.editing_time}
+          </Time>
         </Flex>
       </StyledCard>
       <Common
         recipe={recipe}
-        type='edit'
+        type="edit"
         editing_history={editing_history}
         isVisible={isVisible}
         hideModal={() => setIsVisible(false)}
@@ -116,7 +137,7 @@ const Flex = styled.div`
   margin-top: 10px;
 `;
 
-const CreationTime = styled.span`
+const Time = styled.span`
   font-size: 14px;
   color: grey;
   margin-left: 5px;

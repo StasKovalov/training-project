@@ -1,8 +1,9 @@
 import mockData from './mockData';
 import t from './actionTypes';
+import { LOCAL_STORAGE_RECIPES } from '../constants';
 
 export const initRootState = {
-  recipes: [...mockData],
+  recipes: JSON.parse(localStorage.getItem(LOCAL_STORAGE_RECIPES)) || [...mockData],
 };
 
 export const rootReducer = (state, { type, payload }) => {
@@ -10,6 +11,7 @@ export const rootReducer = (state, { type, payload }) => {
     case t.ADD_RECIPE: {
       const recipes = [...state.recipes];
       recipes.unshift(payload);
+      localStorage.setItem(LOCAL_STORAGE_RECIPES, JSON.stringify(recipes));
       return {
         ...state,
         recipes,
@@ -21,6 +23,7 @@ export const rootReducer = (state, { type, payload }) => {
         ({ recipe }) => recipe.id === payload.recipe.id,
       );
       recipes.splice(recipeIndex, 1, payload);
+      localStorage.setItem(LOCAL_STORAGE_RECIPES, JSON.stringify(recipes));
       return {
         ...state,
         recipes,
@@ -31,6 +34,7 @@ export const rootReducer = (state, { type, payload }) => {
       const recipes = state.recipes.filter(
         ({ recipe: { id } }) => id !== payload,
       );
+      localStorage.setItem(LOCAL_STORAGE_RECIPES, JSON.stringify(recipes));
 
       return {
         ...state,
