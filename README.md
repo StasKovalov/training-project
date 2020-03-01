@@ -8,3 +8,7 @@ cd training-project
 yarn
 yarn start
 ```
+
+## Screenshots
+
+![Image alt](https://github.com/StasKovalov/training-project/master/assets/project_view.jpeg)
