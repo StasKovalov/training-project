@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { Card, Icon } from 'antd';
-import Editing from '../ModalWindows/Editing';
+import { Card, Icon, Popconfirm, message } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
+import Common from '../ModalWindows/Common';
 
 import { min, max } from '../../styles/MediaQueries';
 import { transiton } from '../../constants/styles';
+import { deleteRecipe } from '../../context/actions';
+import { useRootContext } from '../../context';
+import { successMessage } from '../../constants/messages';
 
 const { Meta } = Card;
 
-const RecepieCard = ({ recepie, editing_history }) => {
-  const initialValues = {
-    title: recepie.title,
-    description: recepie.description,
-  };
+const RecepieCard = ({ recipe, editing_history }) => {
+  const history = useHistory();
+  const { dispatch } = useRootContext();
   const [isVisible, setIsVisible] = useState(false);
 
   return (
@@ -21,29 +24,66 @@ const RecepieCard = ({ recepie, editing_history }) => {
       <StyledCard
         style={{ marginTop: 16 }}
         hoverable
-        actions={[
-          <Icon type='login' key='login' />,
-          <Icon onClick={() => setIsVisible(true)} type='edit' key='edit' />,
-          <Icon type='delete' key='delete' />,
-        ]}
+        onClick={() => editing_history && history.push(`/recipe/${recipe.id}`)}
+        actions={
+          editing_history && [
+            <Icon
+              onClick={e => {
+                e.stopPropagation();
+                history.push(`/recipe/${recipe.id}`);
+              }}
+              type="login"
+              key="login"
+            />,
+            <Icon
+              onClick={e => {
+                e.stopPropagation();
+                setIsVisible(true);
+              }}
+              type="edit"
+              key="edit"
+            />,
+            <Popconfirm
+              title="Are you sure delete this recipe?"
+              icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+              okText="Yes"
+              onConfirm={e => {
+                e.stopPropagation();
+                setTimeout(() => {
+                  deleteRecipe(dispatch, recipe.id);
+                  message.success(successMessage('delet'));
+                }, 500);
+              }}
+              cancelText="No"
+            >
+              <Icon
+                onClick={e => e.stopPropagation()}
+                type="delete"
+                key="delete"
+              />
+            </Popconfirm>,
+          ]
+        }
       >
         <form style={{ flexGrow: 1 }}>
           <Meta
-            title={<Title>{recepie.title}</Title>}
-            description={<Description>{recepie.description}</Description>}
+            title={<Title>{recipe.title}</Title>}
+            description={<Description>{recipe.description}</Description>}
           />
         </form>
         <Flex>
-          CREATION TIME: <CreationTime>{recepie.creation_time}</CreationTime>
+          {editing_history ? 'CREATION TIME:' : 'EDITING TIME:'}{' '}
+          <Time>
+            {editing_history ? recipe.creation_time : recipe.editing_time}
+          </Time>
         </Flex>
       </StyledCard>
-      <Editing
-        initialValues={initialValues}
-        recepie={recepie}
+      <Common
+        recipe={recipe}
+        type="edit"
         editing_history={editing_history}
         isVisible={isVisible}
         hideModal={() => setIsVisible(false)}
-        onSaveChanges={() => console.log('work')}
       />
     </>
   );
@@ -55,11 +95,14 @@ const StyledCard = styled(Card)`
   transition: ${transiton};
   display: flex;
   flex-direction: column;
+  border-radius: 15px;
+  overflow: hidden;
   .ant-card-body {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
   }
+  margin: 4px;
 
   ${min.exLarge`
         width: 32%;
@@ -81,8 +124,9 @@ const Title = styled.h4`
   text-overflow: ellipsis;
 `;
 
-const Description = styled.span`
+const Description = styled.div`
   font-size: 16px;
+  word-wrap: break-word;
 `;
 
 const Flex = styled.div`
@@ -93,7 +137,7 @@ const Flex = styled.div`
   margin-top: 10px;
 `;
 
-const CreationTime = styled.span`
+const Time = styled.span`
   font-size: 14px;
   color: grey;
   margin-left: 5px;
