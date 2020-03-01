@@ -11,4 +11,4 @@ yarn start
 
 ## Screenshots
 
-![Image alt](https://github.com/StasKovalov/training-project/master/assets/project_view.jpeg)
+![Image alt](https://github.com/StasKovalov/training-project/raw/master/assets/project_view.jpg)
